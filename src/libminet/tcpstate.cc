@@ -6,7 +6,8 @@
  ******************************************************************************/
 
 #include "tcpstate.h"
-
+using std::cout;
+using std::endl;
 TCPState::TCPState()
 {}
 
@@ -47,7 +48,7 @@ bool TCPState::SetLastAcked(unsigned int newack)
   if(last_acked <= last_sent) {
     if(newack > last_acked && newack <= last_sent + 1) {
       //Delete the front of the buffer
-      SendBuffer.Erase(0, newack - last_acked);
+      SendBuffer.Erase(0, newack - 1 - last_acked);
       last_acked = newack - 1;
       return true;
     } else {
@@ -57,6 +58,8 @@ bool TCPState::SetLastAcked(unsigned int newack)
     //Delete the front of the buffer
     SendBuffer.Erase(0, newack - last_acked);
     last_acked = newack - 1;
+    cout<<"In this situation"<<endl;
+    while(1){}
     return true;
   } else if(newack < last_acked && newack <= last_sent + 1) {
     //Delete the front of the buffer
@@ -78,6 +81,7 @@ void TCPState::SetLastRecvd(unsigned int lastrecvd)
 
 bool TCPState::SetLastRecvd(unsigned int lastrecvd, unsigned int length)
 {
+    cout<<"In SetLastRecvd "<<"[last_recvd:"<<last_recvd<<"] [lastrecvd "<<lastrecvd<<"] [len "<<length<<"]"<<endl;
   if(lastrecvd == last_recvd + 1) {
     if((length <= N) && (RecvBuffer.GetSize()+length <= TCP_BUFFER_SIZE)) {
       last_recvd += length;
